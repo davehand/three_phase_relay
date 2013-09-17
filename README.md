@@ -4,5 +4,5 @@ TCNJ Senior Project
 
 Dave Hand
 Eddie Spencer
-Tim Nugget
+Tim Nugent
 Steve
