@@ -374,7 +374,7 @@ void TinyGPS::f_get_position(float *latitude, float *longitude, unsigned long *f
 }
 
 void TinyGPS::crack_datetime(int *year, byte *month, byte *day, 
-  byte *hour, byte *minute, byte *second, byte *hundredths, unsigned long *age)
+  byte *hour, byte *minute, byte *second, byte *hundredths, byte *ms, byte *ns, byte *us, unsigned long *age)
 {
   unsigned long date, time;
   get_datetime(&date, &time, age);
@@ -389,6 +389,9 @@ void TinyGPS::crack_datetime(int *year, byte *month, byte *day,
   if (minute) *minute = (time / 10000) % 100;
   if (second) *second = (time / 100) % 100;
   if (hundredths) *hundredths = time % 100;
+    if (ms) *ms = time % 1000;
+    if (ns) *ns = time % 1000000;
+    if (us) *us = time % 1000000000;
 }
 
 float TinyGPS::f_altitude()    
