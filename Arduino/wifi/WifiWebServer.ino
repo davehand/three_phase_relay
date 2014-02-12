@@ -1,31 +1,10 @@
-/*
-  WiFi Web Server LED Blink
-
- A simple web server that lets you blink an LED via the web.
- This sketch will print the IP address of your WiFi Shield (once connected)
- to the Serial monitor. From there, you can open that address in a web browser
- to turn on and off the LED on pin 9.
-
- If the IP address of your shield is yourAddress:
- http://yourAddress/H turns the LED on
- http://yourAddress/L turns it off
-
- This example is written for a network using WPA encryption. For
- WEP or WPA, change the Wifi.begin() call accordingly.
-
- Circuit:
- * WiFi shield attached
- * LED attached to pin 9
-
- created 25 Nov 2012
- by Tom Igoe
- */
 #include <SPI.h>
 #include <WiFi.h>
 
 char ssid[] = "SteveAndTimECE";      //  your network SSID (name)
 char pass[] = "DeesePowerSystems";   // your network password
 int keyIndex = 0;                 // your network key Index number (needed only for WEP)
+int reading = 0;
 
 int status = WL_IDLE_STATUS;
 WiFiServer server(80);
@@ -33,8 +12,9 @@ WiFiServer server(80);
 void setup() {
   Serial.begin(9600);      // initialize serial communication
   pinMode(9, OUTPUT);      // set the LED pin mode
-
-  // check for the presence of the shield:
+  pinMode(A0, INPUT);
+  
+  //heck for the presence of the shield:
   if (WiFi.status() == WL_NO_SHIELD) {
     Serial.println("WiFi shield not present");
     while (true);       // don't continue
@@ -79,10 +59,14 @@ void loop() {
             client.println("HTTP/1.1 200 OK");
             client.println("Content-type:text/html");
             client.println();
-
+            
+             reading = analogRead(A0);
+            
             // the content of the HTTP response follows the header:
-            client.print("Click <a href=\"/H\">here</a> turn the LED on pin 9 on<br>");
-            client.print("Click <a href=\"/L\">here</a> turn the LED on pin 9 off<br>");
+            client.print(reading);
+            
+            //client.print("Click <a href=\"/H\">here</a> turn the LED on pin 9 on<br>");
+            //client.print("Click <a href=\"/L\">here</a> turn the LED on pin 9 off<br>");
 
             // The HTTP response ends with another blank line:
             client.println();
