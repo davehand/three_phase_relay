@@ -4,7 +4,7 @@
 char ssid[] = "SteveAndTimECE";      //  your network SSID (name)
 char pass[] = "DeesePowerSystems";   // your network password
 int keyIndex = 0;                 // your network key Index number (needed only for WEP)
-int reading = 0;
+int voltageReading = 0;
 
 int status = WL_IDLE_STATUS;
 WiFiServer server(80);
@@ -14,16 +14,6 @@ void setup() {
   pinMode(9, OUTPUT);      // set the LED pin mode
   pinMode(A0, INPUT);
   
-  //heck for the presence of the shield:
-  if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi shield not present");
-    while (true);       // don't continue
-  }
-
-  String fv = WiFi.firmwareVersion();
-  if ( fv != "1.1.0" )
-    Serial.println("Please upgrade the firmware");
-
   // attempt to connect to Wifi network:
   while ( status != WL_CONNECTED) {
     Serial.print("Attempting to connect to Network named: ");
@@ -58,12 +48,21 @@ void loop() {
             // and a content-type so the client knows what's coming, then a blank line:
             client.println("HTTP/1.1 200 OK");
             client.println("Content-type:text/html");
+            
             client.println();
             
-             reading = analogRead(A0);
+             voltageReading = analogRead(A0);
             
+                      //meta-refresh page every 2 seconds
+            client.print("<HEAD>");
+            client.print("<meta http-equiv=\"refresh\" content=\"0\">");
+            client.print("<TITLE />Smart 3 Phase Relay TCNJ</title>");
+            client.print("</head>");
             // the content of the HTTP response follows the header:
-            client.print(reading);
+            client.print("Voltage Reading: ");
+            client.print(voltageReading);
+            client.println();
+            client.println();
             
             //client.print("Click <a href=\"/H\">here</a> turn the LED on pin 9 on<br>");
             //client.print("Click <a href=\"/L\">here</a> turn the LED on pin 9 off<br>");

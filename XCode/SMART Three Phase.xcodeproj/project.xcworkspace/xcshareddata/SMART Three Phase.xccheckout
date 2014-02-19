@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>01DA080A-CFCF-4FAE-9909-FF9092399DA3</string>
+	<key>IDESourceControlProjectName</key>
+	<string>SMART Three Phase</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>FFC1B12B-A499-4B52-BBC5-47002E9E42D5</key>
+		<string>https://github.com/davehand/three_phase_relay.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>XCode/SMART Three Phase.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>FFC1B12B-A499-4B52-BBC5-47002E9E42D5</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/davehand/three_phase_relay.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>FFC1B12B-A499-4B52-BBC5-47002E9E42D5</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>FFC1B12B-A499-4B52-BBC5-47002E9E42D5</string>
+			<key>IDESourceControlWCCName</key>
+			<string>three_phase_relay</string>
+		</dict>
+	</array>
+</dict>
+</plist>
