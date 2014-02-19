@@ -5,14 +5,28 @@ char ssid[] = "SteveAndTimECE";      //  your network SSID (name)
 char pass[] = "DeesePowerSystems";   // your network password
 int keyIndex = 0;                 // your network key Index number (needed only for WEP)
 int voltageReading = 0;
+   
+int relay=6;
+int cross=8;
+int peakpin=A0;
+int peak;
+int pretime=0;
+int phasetime;
+int crosstime;
+bool state;
+bool prestate=0;
 
 int status = WL_IDLE_STATUS;
 WiFiServer server(80);
 
 void setup() {
-  Serial.begin(9600);      // initialize serial communication
+  Serial.begin(115200);      // initialize serial communication
   pinMode(9, OUTPUT);      // set the LED pin mode
-  pinMode(A0, INPUT);
+  //pinMode(A0, INPUT);
+  
+  pinMode(peakpin,INPUT);
+  pinMode(relay,OUTPUT);
+  pinMode(cross,INPUT);
   
   // attempt to connect to Wifi network:
   while ( status != WL_CONNECTED) {
@@ -30,6 +44,20 @@ void setup() {
 
 
 void loop() {
+
+              peak=analogRead(peakpin);
+  state=digitalRead(cross);
+  if(state!=prestate){
+    crosstime=micros();
+    phasetime=crosstime-pretime;
+    }
+   digitalWrite(relay,!state);
+
+  prestate=state;
+  pretime=crosstime;
+  Serial.println(phasetime);
+  
+            
   WiFiClient client = server.available();   // listen for incoming clients
 
   if (client) {                             // if you get a client,
@@ -51,18 +79,26 @@ void loop() {
             
             client.println();
             
-             voltageReading = analogRead(A0);
+           
+
             
-                      //meta-refresh page every 2 seconds
+   
+            //change updating 
             client.print("<HEAD>");
             client.print("<meta http-equiv=\"refresh\" content=\"0\">");
             client.print("<TITLE />Smart 3 Phase Relay TCNJ</title>");
             client.print("</head>");
+            
+            
             // the content of the HTTP response follows the header:
-            client.print("Voltage Reading: ");
-            client.print(voltageReading);
+            client.print("Peak Voltage Reading: ");
+            client.println(peak);
+            client.print("Phase Time Reading: ");
+            client.println(phasetime);
+            
             client.println();
             client.println();
+     
             
             //client.print("Click <a href=\"/H\">here</a> turn the LED on pin 9 on<br>");
             //client.print("Click <a href=\"/L\">here</a> turn the LED on pin 9 off<br>");
