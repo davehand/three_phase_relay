@@ -85,14 +85,13 @@ void loop()
                         client.println("}}}}");
                         client.println("request.open(\"GET\", \"ajax_switch\" + nocache, true);");
                         client.println("request.send(null);");
-                        client.println("setTimeout('GetSwitchState()', 1);");
+                        client.println("setTimeout('GetSwitchState()', 0);");
                         client.println("}");
                         client.println("</script>");
                         client.println("</head>");
                         client.println("<body onload=\"GetSwitchState()\">");
                         client.println("<h1>Arduino AJAX Switch Status</h1>");
-                        client.println(
-                        "<p id=\"switch_txt\">Switch state: Not requested...</p>");
+                        client.println("<p id=\"switch_txt\">Switch state: Not requested...</p>");
                         client.println("</body>");
                         client.println("</html>");
                     }
@@ -136,6 +135,7 @@ void GetSwitchState(WiFiClient cl)
       
       cl.println("Peak Value");
       cl.println(peak);
+      cl.println("");
       cl.println("Phase Time");
       cl.println(phasetime);
   
