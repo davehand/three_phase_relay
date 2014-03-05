@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Default HTML</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+          function init() {
+            //connect to the socket server
+            var socket = io.connect('http://127.0.0.1:8070');
+            //on connect
+            socket.on('connect', function() {
+              //send message
+              socket.send('hello from client');
+              while(1) {
+                socket.send(Math.random());
+              }
+            });
+          }
+        </script>
+    </head>
+
+    <body> 
+        <h1>Welcome!</h1>
+        <p>It's running</p>
+        <button onclick="init()">Send Data</button>
+    </body>
+    
+</html>
+
+
