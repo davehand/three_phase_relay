@@ -22,6 +22,7 @@ int phasetime;
 int crosstime;
 bool state;
 bool prestate=0;
+String HTTP_req;
 
 int status = WL_IDLE_STATUS;
 WiFiServer server(80);
@@ -72,7 +73,8 @@ void loop() {
     String currentLine = "";                // make a String to hold incoming data from the client
     while (client.connected()) {            // loop while the client's connected
       if (client.available()) {             // if there's bytes to read from the client,
-        char c = client.read();             // read a byte, then
+        char c = client.read();        // read a byte, then
+        HTTP_req +=c;
         Serial.write(c);                    // print it out the serial monitor
         if (c == '\n') {                    // if the byte is a newline character
 
@@ -80,27 +82,47 @@ void loop() {
           // that's the end of the client HTTP request, so send a response:
           if (currentLine.length() == 0) {
             // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
-            // and a content-type so the client knows what's coming, then a blank line:
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/html");
-            
-            client.println();
+            // and a content-type so the client knows what's coming, then a blank line: 
+                  client.println("HTTP/1.1 200 OK");
+                    client.println("Content-Type: text/html");
+                    client.println("Connection: keep-alive");
+                    client.println();
+                    // AJAX request for switch state
+                    if (HTTP_req.indexOf("ajax_switch") > -1) {
+                        // read switch state and send appropriate paragraph text
+                        GetSwitchState(client);
+                    }
+                    else {  // HTTP request for web page
+                        // send web page - contains JavaScript with AJAX calls
+                        client.println("<!DOCTYPE html>");
+                        client.println("<html>");
+                        client.println("<head>");
+                        client.println("<title>Arduino Web Page</title>");
+                        client.println("<script>");
+                        client.println("function GetSwitchState() {");
+                        client.println("nocache = \"&nocache=\"\+ Math.random() * 1000000;");
+                        client.println("var request = new XMLHttpRequest();");
+                        client.println("request.onreadystatechange = function() {");
+                        client.println("if (this.readyState == 4) {");
+                        client.println("if (this.status == 200) {");
+                        client.println("if (this.responseText != null) {");
+                        client.println("document.getElementById(\"switch_txt\")\.innerHTML = this.responseText;");
+                        client.println("}}}}");
+                        client.println(
+                        "request.open(\"GET\", \"ajax_switch\" + nocache, true);");
+                        client.println("request.send(null);");
+                        client.println("setTimeout('GetSwitchState()', 1000);");
+                        client.println("}");
+                        client.println("</script>");
+                        client.println("</head>");
+                        client.println("<body onload=\"GetSwitchState()\">");
+                        client.println("<h1>Arduino AJAX Switch Status</h1>");
+                        client.println(
+                        "<p id=\"switch_txt\">Switch state: Not requested...</p>");
+                        client.println("</body>");
+                        client.println("</html>");
+                    }
 
-            //change updating 
-            client.print("<HEAD>");
-           // client.print("<meta http-equiv=\"refresh\" content=\"0\">");
-            client.print("<TITLE />Smart 3 Phase Relay TCNJ</title>");
-            client.println("</head>");
-          
-            // the content of the HTTP response follows the header:
-            client.print("Peak Voltage Reading: ");
-            client.println(peak);
-            client.print("Phase Time Reading: ");
-            client.println(phasetime);
-            
-            client.println();
-            client.println();
-     
             
             //client.print("Click <a href=\"/H\">here</a> turn the LED on pin 9 on<br>");
             //client.print("Click <a href=\"/L\">here</a> turn the LED on pin 9 off<br>");
@@ -131,6 +153,20 @@ void loop() {
     client.stop();
     Serial.println("client disonnected");
   }
+}
+
+// send the state of the switch to the web browser
+void GetSwitchState(WiFiClient cl)
+{
+    if (digitalRead(peakpin)) {
+        cl.print("Peak Voltage Reading:");
+        cl.println(peak);
+    }
+    else {
+        cl.println("Switch state: OFF");
+    }
+    
+    
 }
 
 void printWifiStatus() {
