@@ -22,6 +22,7 @@ bool state;
 bool prestate=0;
 String HTTP_req;
 
+
 int status = WL_IDLE_STATUS;
 WiFiServer server(80);
 
@@ -44,13 +45,17 @@ void setup()
   }
   server.begin();                           // start the web server on port 80
   printWifiStatus();
+  
+ 
 }
 
 void loop()
 {
     WiFiClient client = server.available();  // try to get client
-
+    
     createWebPage(client);
+
+    Serial.println(phase_avg);
 
     getData();
 }
@@ -90,12 +95,15 @@ void getData()
        }
 
        //only do a few readings for phase b/c Arduino ints are small
-       if (i < 4) {
-         i++;
+       if (i < 2) {
+         
          //calculate phase time value
-         phase_avg = (phasetime + (phase_avg*(i-1)))/i;
+         if (phasetime > 8000) {
+           phase_avg = phasetime;
+           i++;
+         }
        }
-       //Serial.println(phase_avg);
+      
        endTime = millis();
     }
 }
@@ -140,13 +148,14 @@ void createWebPage (WiFiClient client) {
                         client.println("}}}}");
                         client.println("request.open(\"GET\", \"ajax_switch\" + nocache, true);");
                         client.println("request.send(null);");
-                        client.println("setTimeout('GetSwitchState()', 1900);");
+                        client.println("setTimeout('GetSwitchState()', 1000);");
                         client.println("}");
                         client.println("</script>");
                         client.println("</head>");
                         client.println("<body onload=\"GetSwitchState()\">");
-                        client.println("<h1>Arduino AJAX Switch Status</h1>");
-                        client.println("<p id=\"switch_txt\">Switch state: Not requested...</p>");
+                        client.println("<h1>Smart Three Phase Power System Status</h1>");
+                        client.println("<p id=\"switch_txt\">Loading data...</p>");
+                        client.println("<a href=\"http://tcnjsmart.weebly.com\">TCNJ SMART Home Page</a>");
                         client.println("</body>");
                         client.println("</html>");
                     }
@@ -177,9 +186,10 @@ void GetSwitchState(WiFiClient cl){
 
   cl.println("Peak: ");
   cl.println(peak_max);
+  cl.println(" V");
   cl.println("Phase: ");
   cl.println(phase_avg);
-
+  cl.println(" ms");
 }
 
 void printWifiStatus() {
