@@ -7,7 +7,7 @@ char ssid[] = "SteveAndTimECE";      //  your network SSID (name)
 char pass[] = "DeesePowerSystems";   // your network password
 int keyIndex = 0;                 // your network key Index number (needed only for WEP)
 int voltageReading = 0;
-   
+
 int relay=6;
 int cross=8;
 int peakpin=A0;
@@ -31,7 +31,7 @@ void setup()
   pinMode(peakpin,INPUT);
   pinMode(relay,OUTPUT);
   pinMode(cross,INPUT);
-  
+
   // attempt to connect to Wifi network:
   while ( status != WL_CONNECTED) {
     Serial.print("Attempting to connect to Network named: ");
@@ -43,15 +43,15 @@ void setup()
     //delay(10000);
   }
   server.begin();                           // start the web server on port 80
-  printWifiStatus(); 
+  printWifiStatus();
 }
 
 void loop()
 {
     WiFiClient client = server.available();  // try to get client
-    
+
     createWebPage(client);
-  
+
     getData();
 }
 
@@ -67,9 +67,9 @@ void getData()
      pretime = micros();
      phase_sum = 0;
      phase_avg = 0;
-     
-     while ((endTime - startTime) <= 1000) {         
-       
+
+     while ((endTime - startTime) <= 1000) {
+
        //read peak and phasetime
        peak=analogRead(peakpin);
        state=digitalRead(cross);
@@ -79,26 +79,29 @@ void getData()
        }
        //steve's thing
        digitalWrite(relay,!state);
- 
+
        //sets values for next iteration
        prestate=state;
        pretime=crosstime;
-      
+
        //find max peak in second
        if (peak > peak_max) {
          peak_max = peak;
        }
-       
-       i++;
-       //calculate phase time value
-       phase_avg = (phasetime + (phase_avg*(i-1)))/i;
-       Serial.println(phase_avg);
+
+       //only do a few readings for phase b/c Arduino ints are small
+       if (i < 4) {
+         i++;
+         //calculate phase time value
+         phase_avg = (phasetime + (phase_avg*(i-1)))/i;
+       }
+       //Serial.println(phase_avg);
        endTime = millis();
-    }  
+    }
 }
 
 void createWebPage (WiFiClient client) {
-  
+
   if (client) {  // got client?
         boolean currentLineIsBlank = true;
         while (client.connected()) {
@@ -117,7 +120,7 @@ void createWebPage (WiFiClient client) {
                     if (HTTP_req.indexOf("ajax_switch") > -1) {
                         // read switch state and send appropriate paragraph text
                         GetSwitchState(client);
-                        
+
                     }
                     else {  // HTTP request for web page
                         // send web page - contains JavaScript with AJAX calls
@@ -157,7 +160,7 @@ void createWebPage (WiFiClient client) {
                     // last character on line of received text
                     // starting new line with next character read
                     currentLineIsBlank = true;
-                } 
+                }
                 else if (c != '\r') {
                     // a text character was received from client
                     currentLineIsBlank = false;
@@ -167,16 +170,16 @@ void createWebPage (WiFiClient client) {
         delay(1);      // give the web browser time to receive the data
         client.stop(); // close the connection
     } // end if (client)
-  
+
 }
 
 void GetSwitchState(WiFiClient cl){
-  
+
   cl.println("Peak: ");
   cl.println(peak_max);
   cl.println("Phase: ");
   cl.println(phase_avg);
-  
+
 }
 
 void printWifiStatus() {
