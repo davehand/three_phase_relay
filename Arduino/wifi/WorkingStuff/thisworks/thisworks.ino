@@ -98,7 +98,7 @@ void getData()
        if (i < 2) {
          
          //calculate phase time value
-         if (phasetime > 8000) {
+         if (phasetime > 5000) {
            phase_avg = phasetime;
            i++;
          }
