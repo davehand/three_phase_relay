@@ -21,6 +21,7 @@ int crosstime;
 bool state;
 bool prestate=0;
 String HTTP_req;
+int newVoltage = 0;
 
 
 int status = WL_IDLE_STATUS;
@@ -77,6 +78,7 @@ void getData()
 
        //read peak and phasetime
        peak=analogRead(peakpin);
+       newVoltage=peak*0.4295+29.934;
        state=digitalRead(cross);
        if(state!=prestate){
           crosstime=micros();
@@ -90,8 +92,8 @@ void getData()
        pretime=crosstime;
 
        //find max peak in second
-       if (peak > peak_max) {
-         peak_max = peak;
+       if (newVoltage > peak_max) {
+         peak_max = newVoltage;
        }
 
        //only do a few readings for phase b/c Arduino ints are small
